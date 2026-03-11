@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: drupal
+      POSTGRES_USER: drupal
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - drupal_network
+
+  drupal:
+    image: drupal:latest
+    container_name: drupal
+    restart: unless-stopped
+    ports:
+      - "9090:80"
+    volumes:
+      - drupal_data:/var/www/html
+    depends_on:
+      - postgres
+    networks:
+      - drupal_network
+
+volumes:
+  postgres_data:
+    driver: local
+  drupal_data:
+    driver: local
+
+networks:
+  drupal_network:
+    driver: bridge
